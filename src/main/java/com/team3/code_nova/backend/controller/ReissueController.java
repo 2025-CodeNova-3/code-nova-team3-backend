@@ -90,15 +90,4 @@ public class ReissueController {
                 new ApiResponse<>(200, 4000, "엑세스, 리프레시 토큰 재발급 완료", accessAndRefreshTokenDTO)
         );
     }
-
-    private Cookie createCookie(String key, String value) {
-
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60);
-        //cookie.setSecure(true);   // HTTPS 에서만 쿠키를 사용할 수 있도록 설정
-        cookie.setPath("/");        // 쿠키가 보일 위치 설정
-        cookie.setHttpOnly(true);   // JavaScript 쿠키 조작 불가능
-
-        return cookie;
-    }
 }

@@ -1,19 +1,19 @@
 package com.team3.code_nova.backend.util.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team3.code_nova.backend.dto.AccessAndRefreshTokenDTO;
+import com.team3.code_nova.backend.dto.EmptyResponse;
 import com.team3.code_nova.backend.dto.auth.CustomUserDetails;
-import com.team3.code_nova.backend.util.CustomFilterException;
+import com.team3.code_nova.backend.util.InnerFilterResponse;
 import com.team3.code_nova.backend.util.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.StreamUtils;
 
@@ -50,8 +50,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             username = jsonRequest.get("username");
             password = jsonRequest.get("password");
         } catch (IOException e) {
-
-            throw new CustomFilterException(400, 2001, "잘못된 요청 JSON 형식");
+            throw new AuthenticationException("Failed to parse authentication request body") {};
         }
 
         // 스프링 시큐리티에서 username과 password를 검증하기 위해 token에 담아야 함
@@ -76,43 +75,16 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String accessToken = jwtUtil.generateAccessToken(userId, username, role);
         String refreshToken = jwtUtil.generateRefreshToken(userId, username, role);
 
-        // 응답 설정
-        response.setStatus(HttpStatus.OK.value());
-        response.setContentType("application/json; charset=UTF-8");
+        InnerFilterResponse.sendInnerResponse(response, 200, 2000,
+                "로그인 성공! 엑세스, 리프레시 토큰 발급", new AccessAndRefreshTokenDTO(accessToken, refreshToken));
 
-        Map<String, Object> jsonResponse = Map.of(
-                "status", 200,
-                "code", 2000,
-                "message", "로그인 성공! 엑세스, 리프레시 토큰 발급 완료",
-                "data", Map.of(
-                        "access", accessToken,
-                        "refresh", refreshToken
-                )
-        );
-
-        response.getWriter().write(objectMapper.writeValueAsString(jsonResponse));
     }
 
     // 로그인 실패 시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
 
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType("application/json; charset=UTF-8");
-
-        String errorMessage = failed.getCause() instanceof UsernameNotFoundException
-                ? "username에 해당하는 User 미존재"
-                : "비밀번호 불일치";
-
-        Map<String, Object> jsonResponse = Map.of(
-                "status", 401,
-                "code", 2002,
-                "message", errorMessage,
-                "data", Map.of(
-                        "message", "No data available"
-                )
-        );
-
-        response.getWriter().write(objectMapper.writeValueAsString(jsonResponse));
+        InnerFilterResponse.sendInnerResponse(response,401, 2002,
+                "로그인 인증 실패", new EmptyResponse());
     }
 }

@@ -1,5 +1,6 @@
 package com.team3.code_nova.backend.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -9,11 +10,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ComponentScan
 public class AutoWebConfig implements WebMvcConfigurer {
 
+    @Value("${spring.front.domain}")
+    private String frontDomain;
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // cors를 적용할 spring서버의 url 패턴.
                 .exposedHeaders("Set-Cookie", "Authorization")
-                .allowedOrigins("http://localhost:3000")
+                .allowedOrigins("http://localhost:3000", frontDomain)
                 .allowedMethods("GET", "POST", "PUT");
     }
 }

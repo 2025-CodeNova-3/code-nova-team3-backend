@@ -30,7 +30,7 @@ public class SignUpController {
             );
         } catch (RuntimeException e) {
             return ResponseEntity.status(409).body(
-                    new ApiResponse<>(409, 1001,"이미 존재하는 username", new EmptyResponse())
+                    new ApiResponse<>(409, 1001,"중복된 username 또는 email", new EmptyResponse())
             );
         }
     }

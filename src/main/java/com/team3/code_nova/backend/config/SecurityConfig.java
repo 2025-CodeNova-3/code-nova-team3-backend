@@ -1,12 +1,14 @@
 package com.team3.code_nova.backend.config;
 
+import com.team3.code_nova.backend.dto.EmptyResponse;
+import com.team3.code_nova.backend.util.InnerFilterResponse;
 import com.team3.code_nova.backend.util.JWTUtil;
 import com.team3.code_nova.backend.util.filter.CustomLogoutFilter;
 import com.team3.code_nova.backend.util.filter.JWTFilter;
 import com.team3.code_nova.backend.util.filter.LoginFilter;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,10 +19,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static com.team3.code_nova.backend.enums.Role.ADMIN;
@@ -29,6 +31,9 @@ import static com.team3.code_nova.backend.enums.Role.USER;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Value("${spring.front.domain}")
+    private String frontDomain;
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
@@ -63,8 +68,7 @@ public class SecurityConfig {
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
 
                         CorsConfiguration configuration = new CorsConfiguration();
-
-                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", frontDomain));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -101,9 +105,9 @@ public class SecurityConfig {
                 
                 // 인증 실패 시 로그인 페이지로 리다이렉트가 아닌 401 응답 뱉도록 설정
                 .exceptionHandling(customizer -> customizer.authenticationEntryPoint((request, response, authException) -> {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.setContentType("application/json");
-                    response.getWriter().write("{\"error\": \"Authentication required.\"}");
+
+                    InnerFilterResponse.sendInnerResponse(response, 401, 101,
+                                "유효하지 않은 토큰", new EmptyResponse());
                 }));
 
         //JWTFilter 추가

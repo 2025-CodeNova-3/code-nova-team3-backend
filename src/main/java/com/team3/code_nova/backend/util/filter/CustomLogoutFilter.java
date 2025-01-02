@@ -1,6 +1,7 @@
 package com.team3.code_nova.backend.util.filter;
 
-import com.team3.code_nova.backend.util.CustomFilterException;
+import com.team3.code_nova.backend.dto.EmptyResponse;
+import com.team3.code_nova.backend.util.InnerFilterResponse;
 import com.team3.code_nova.backend.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -54,7 +55,9 @@ public class CustomLogoutFilter extends GenericFilterBean {
         // Authorization 헤더가 없는 경우
         if (authorization == null || !authorization.startsWith("Bearer ")) {
 
-            throw new CustomFilterException(400, 3001, "Authorization 헤더 미설정");
+            InnerFilterResponse.sendInnerResponse(response, 400, 3001,
+                    "Authorization 헤더 미설정", new EmptyResponse());
+            return;
         }
 
         String accessToken = authorization.split(" ")[1];
@@ -64,14 +67,18 @@ public class CustomLogoutFilter extends GenericFilterBean {
             jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
 
-            throw new CustomFilterException(400, 3002, "엑세스 토큰 만료");
+            InnerFilterResponse.sendInnerResponse(response, 400, 3002,
+                    "엑세스 토큰 만료", new EmptyResponse());
+            return;
         }
 
         // 토큰 타입 검증
         String accessTokenType = jwtUtil.getTokenType(accessToken);
         if (!accessTokenType.equals("access")) {
 
-            throw new CustomFilterException(400, 3003, "엑세스 토큰 만료");
+            InnerFilterResponse.sendInnerResponse(response, 400, 3003,
+                    "엑세스 토큰 타입 미일치", new EmptyResponse());
+            return;
         }
 
         // 리프레시 토큰 획득
@@ -80,7 +87,9 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         if (cookies == null) {
 
-            throw new CustomFilterException(400, 3004, "토큰 타입 미일치 (헤더로 전달된 토큰이 access 토큰이 아님)");
+            InnerFilterResponse.sendInnerResponse(response, 400, 3004,
+                    "쿠키 자체에 값이 미존재", new EmptyResponse());
+            return;
         }
 
         for (Cookie cookie : cookies) {
@@ -93,7 +102,9 @@ public class CustomLogoutFilter extends GenericFilterBean {
         //refresh null check
         if (refresh == null) {
 
-            throw new CustomFilterException(400, 3005, "쿠키에 refresh 값 미존재");
+            InnerFilterResponse.sendInnerResponse(response, 400, 3005,
+                    "쿠키에 refresh 값 미존재", new EmptyResponse());
+            return;
         }
 
         //expired check
@@ -101,35 +112,32 @@ public class CustomLogoutFilter extends GenericFilterBean {
             jwtUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {
 
-            throw new CustomFilterException(400, 3006, "리프레시 토큰 만료");
+            InnerFilterResponse.sendInnerResponse(response, 400, 3006,
+                    "리프레시 토큰 만료", new EmptyResponse());
+            return;
         }
 
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
         String refreshTokenType = jwtUtil.getTokenType(refresh);
         if (!refreshTokenType.equals("refresh")) {
 
-            throw new CustomFilterException(400, 3007, "토큰 타입 미일치 (쿠키로 전달된 토큰이 refresh 토큰이 아님)");
+            InnerFilterResponse.sendInnerResponse(response, 400, 3007,
+                    "리프레시 토큰 타입 미일치", new EmptyResponse());
+            return;
         }
 
         //DB에 저장되어 있는지 확인
         if (!jwtUtil.isRefreshExist(refresh)) {
 
-            throw new CustomFilterException(400, 3008, "미등록 리프레시 토큰");
+            InnerFilterResponse.sendInnerResponse(response, 400, 3008,
+                    "미등록 리프레시 토큰", new EmptyResponse());
+            return;
         }
 
         //Refresh 토큰 DB에서 제거
         jwtUtil.deleteRefreshEntity(refresh);
 
-        sendResponse(response, 200, 3000, "로그아웃 성공");
-    }
-
-    private void sendResponse(HttpServletResponse response, int statusCode, int code, String message) throws IOException {
-        response.setStatus(statusCode);
-        response.setContentType("application/json; charset=UTF-8");
-        String jsonResponse = String.format(
-                "{\"status\": %d, \"code\": %d, \"message\": \"%s\", \"data\": {\"message\": \"No data available\"}}",
-                statusCode, code, message
-        );
-        response.getWriter().write(jsonResponse);
+        InnerFilterResponse.sendInnerResponse(response, 200, 3000,
+                "로그아웃 성공", new EmptyResponse());
     }
 }
