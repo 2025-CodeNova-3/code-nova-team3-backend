@@ -1,7 +1,7 @@
 package com.team3.code_nova.backend.util.filter;
 
-import com.team3.code_nova.backend.dto.AuthUserDTO;
-import com.team3.code_nova.backend.dto.CustomUserDetails;
+import com.team3.code_nova.backend.dto.auth.AuthUserDTO;
+import com.team3.code_nova.backend.dto.auth.CustomUserDetails;
 import com.team3.code_nova.backend.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;

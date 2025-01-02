@@ -1,4 +1,4 @@
-package com.team3.code_nova.backend.dto;
+package com.team3.code_nova.backend.dto.auth;
 
 import lombok.Getter;
 import lombok.Setter;

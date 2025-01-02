@@ -1,7 +1,7 @@
 package com.team3.code_nova.backend.util.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team3.code_nova.backend.dto.CustomUserDetails;
+import com.team3.code_nova.backend.dto.auth.CustomUserDetails;
 import com.team3.code_nova.backend.util.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;

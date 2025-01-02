@@ -1,6 +1,6 @@
 package com.team3.code_nova.backend.service;
 
-import com.team3.code_nova.backend.dto.CustomUserDetails;
+import com.team3.code_nova.backend.dto.auth.CustomUserDetails;
 import com.team3.code_nova.backend.entity.User;
 import com.team3.code_nova.backend.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
