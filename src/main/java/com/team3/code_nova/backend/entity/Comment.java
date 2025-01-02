@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "comments")
-public class Comment {
+public class Comment extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
@@ -26,4 +26,6 @@ public class Comment {
 
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    private Boolean beforeOpen;
 }

@@ -31,5 +31,8 @@ public class Board extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String hiddenContent;
 
-    private int views;
+    // 해당 게시글의 hidden content 공개 허용 대기 시간 (단위 : 분)
+    private Integer openDuration;
+
+    private Long views;
 }
