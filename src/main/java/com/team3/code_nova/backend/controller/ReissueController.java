@@ -1,11 +1,13 @@
 package com.team3.code_nova.backend.controller;
 
+import com.team3.code_nova.backend.dto.AccessAndRefreshTokenDTO;
+import com.team3.code_nova.backend.dto.ApiResponse;
+import com.team3.code_nova.backend.dto.EmptyResponse;
 import com.team3.code_nova.backend.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +27,13 @@ public class ReissueController {
         //get refresh token
         String refresh = null;
         Cookie[] cookies = request.getCookies();
+
+        if(cookies == null){
+
+            return ResponseEntity.status(400).body(
+                    new ApiResponse<>(400, 4001,"쿠키 값 미설정", new EmptyResponse())
+            );
+        }
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("refresh")) {
                 refresh = cookie.getValue();
@@ -33,8 +42,9 @@ public class ReissueController {
 
         if (refresh == null) {
 
-            //response status code
-            return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(400).body(
+                    new ApiResponse<>(400, 4002,"쿠키에 refresh 값 미존재", new EmptyResponse())
+            );
         }
 
         //expired check
@@ -42,8 +52,9 @@ public class ReissueController {
             jwtUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {
 
-            //response status code
-            return new ResponseEntity<>("refresh token expired", HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(400).body(
+                    new ApiResponse<>(400, 4003,"리프레시 토큰 만료", new EmptyResponse())
+            );
         }
 
         // 토큰이 refresh인지 확인 (발급 시 페이로드에 명시)
@@ -51,14 +62,17 @@ public class ReissueController {
 
         if (!tokenType.equals("refresh")) {
             //response status code
-            return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(400).body(
+                    new ApiResponse<>(400, 4004,"토큰 타입 미일치", new EmptyResponse())
+            );
         }
 
         //DB에 저장되어 있는지 확인
         if (!jwtUtil.isRefreshExist(refresh)) {
 
-            //response body
-            return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(400).body(
+                    new ApiResponse<>(400, 4005, "미등록 리프레시 토큰", new EmptyResponse())
+            );
         }
 
         Long userId = jwtUtil.getUserId(refresh);
@@ -70,11 +84,11 @@ public class ReissueController {
 
         jwtUtil.deleteRefreshEntity(refresh);
 
-        //response
-        response.setHeader("Authorization", "Bearer " + newAccessToken);
-        response.addCookie(createCookie("refresh", newRefreshToken));
+        AccessAndRefreshTokenDTO accessAndRefreshTokenDTO = new AccessAndRefreshTokenDTO(newAccessToken, newRefreshToken);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.status(200).body(
+                new ApiResponse<>(200, 4000, "엑세스, 리프레시 토큰 재발급 완료", accessAndRefreshTokenDTO)
+        );
     }
 
     private Cookie createCookie(String key, String value) {

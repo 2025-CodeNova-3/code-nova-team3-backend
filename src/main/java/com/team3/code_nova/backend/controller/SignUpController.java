@@ -1,5 +1,7 @@
 package com.team3.code_nova.backend.controller;
 
+import com.team3.code_nova.backend.dto.ApiResponse;
+import com.team3.code_nova.backend.dto.EmptyResponse;
 import com.team3.code_nova.backend.dto.SignUpDTO;
 import com.team3.code_nova.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +25,13 @@ public class SignUpController {
     public ResponseEntity<?> signUp(@RequestBody SignUpDTO signUpDTO){
         try {
             userService.join(signUpDTO);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return ResponseEntity.status(200).body(
+                    new ApiResponse<>(200, 1000,"회원가입 성공", new EmptyResponse())
+            );
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            return ResponseEntity.status(409).body(
+                    new ApiResponse<>(409, 1001,"이미 존재하는 username", new EmptyResponse())
+            );
         }
     }
 }

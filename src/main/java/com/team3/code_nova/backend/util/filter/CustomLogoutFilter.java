@@ -1,5 +1,6 @@
 package com.team3.code_nova.backend.util.filter;
 
+import com.team3.code_nova.backend.util.CustomFilterException;
 import com.team3.code_nova.backend.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -52,9 +53,8 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         // Authorization 헤더가 없는 경우
         if (authorization == null || !authorization.startsWith("Bearer ")) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"error\": \"Access token is missing or invalid\"}");
-            return;
+
+            throw new CustomFilterException(400, 3001, "Authorization 헤더 미설정");
         }
 
         String accessToken = authorization.split(" ")[1];
@@ -63,17 +63,15 @@ public class CustomLogoutFilter extends GenericFilterBean {
         try {
             jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"error\": \"Access token expired\"}");
-            return;
+
+            throw new CustomFilterException(400, 3002, "엑세스 토큰 만료");
         }
 
         // 토큰 타입 검증
         String accessTokenType = jwtUtil.getTokenType(accessToken);
         if (!accessTokenType.equals("access")) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"error\": \"Invalid access token\"}");
-            return;
+
+            throw new CustomFilterException(400, 3003, "엑세스 토큰 만료");
         }
 
         // 리프레시 토큰 획득
@@ -82,8 +80,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         if (cookies == null) {
 
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new CustomFilterException(400, 3004, "토큰 타입 미일치 (헤더로 전달된 토큰이 access 토큰이 아님)");
         }
 
         for (Cookie cookie : cookies) {
@@ -96,8 +93,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         //refresh null check
         if (refresh == null) {
 
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new CustomFilterException(400, 3005, "쿠키에 refresh 값 미존재");
         }
 
         //expired check
@@ -105,38 +101,35 @@ public class CustomLogoutFilter extends GenericFilterBean {
             jwtUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {
 
-            //response status code
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new CustomFilterException(400, 3006, "리프레시 토큰 만료");
         }
 
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
         String refreshTokenType = jwtUtil.getTokenType(refresh);
         if (!refreshTokenType.equals("refresh")) {
 
-            //response status code
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new CustomFilterException(400, 3007, "토큰 타입 미일치 (쿠키로 전달된 토큰이 refresh 토큰이 아님)");
         }
 
         //DB에 저장되어 있는지 확인
         if (!jwtUtil.isRefreshExist(refresh)) {
 
-            //response status code
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new CustomFilterException(400, 3008, "미등록 리프레시 토큰");
         }
 
-        //로그아웃 진행
         //Refresh 토큰 DB에서 제거
         jwtUtil.deleteRefreshEntity(refresh);
 
-        //Refresh 토큰 Cookie 값 0
-        Cookie cookie = new Cookie("refresh", null);
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
+        sendResponse(response, 200, 3000, "로그아웃 성공");
+    }
 
-        response.addCookie(cookie);
-        response.setStatus(HttpServletResponse.SC_OK);
+    private void sendResponse(HttpServletResponse response, int statusCode, int code, String message) throws IOException {
+        response.setStatus(statusCode);
+        response.setContentType("application/json; charset=UTF-8");
+        String jsonResponse = String.format(
+                "{\"status\": %d, \"code\": %d, \"message\": \"%s\", \"data\": {\"message\": \"No data available\"}}",
+                statusCode, code, message
+        );
+        response.getWriter().write(jsonResponse);
     }
 }

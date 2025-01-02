@@ -2,9 +2,9 @@ package com.team3.code_nova.backend.util.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team3.code_nova.backend.dto.auth.CustomUserDetails;
+import com.team3.code_nova.backend.util.CustomFilterException;
 import com.team3.code_nova.backend.util.JWTUtil;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -50,24 +50,23 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             username = jsonRequest.get("username");
             password = jsonRequest.get("password");
         } catch (IOException e) {
-            throw new AuthenticationException("Failed to parse authentication request body") {};
+
+            throw new CustomFilterException(400, 2001, "잘못된 요청 JSON 형식");
         }
 
-        //스프링 시큐리티에서 username과 password를 검증하기 위해서는 token에 담아야 함
+        // 스프링 시큐리티에서 username과 password를 검증하기 위해 token에 담아야 함
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
 
-        //token에 담은 검증을 위한 AuthenticationManager로 전달
+        // token에 담은 검증을 위한 AuthenticationManager로 전달
         return authenticationManager.authenticate(authToken);
     }
 
-    //로그인 성공시 실행하는 메소드 (JWT 발급)
+    // 로그인 성공 시 실행하는 메소드 (JWT 발급)
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         Long userId = customUserDetails.getUserId();
         String username = customUserDetails.getUsername();
-
-        // String username = authentication.getName(); // 이 경우 username 은 가져오지만 userId는 따로 받아오지 못함
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
@@ -77,38 +76,43 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String accessToken = jwtUtil.generateAccessToken(userId, username, role);
         String refreshToken = jwtUtil.generateRefreshToken(userId, username, role);
 
-        //응답 설정
-        response.setHeader("Authorization", "Bearer " + accessToken);
-        response.addCookie(createCookie("refresh", refreshToken));
+        // 응답 설정
         response.setStatus(HttpStatus.OK.value());
+        response.setContentType("application/json; charset=UTF-8");
+
+        Map<String, Object> jsonResponse = Map.of(
+                "status", 200,
+                "code", 2000,
+                "message", "로그인 성공! 엑세스, 리프레시 토큰 발급 완료",
+                "data", Map.of(
+                        "access", accessToken,
+                        "refresh", refreshToken
+                )
+        );
+
+        response.getWriter().write(objectMapper.writeValueAsString(jsonResponse));
     }
 
-    //로그인 실패시 실행하는 메소드
+    // 로그인 실패 시 실행하는 메소드
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-        try {
-            if (failed.getCause() instanceof UsernameNotFoundException) {
-                response.setStatus(HttpStatus.BAD_REQUEST.value());
-                response.setContentType("application/json");
-                response.getWriter().write("{\"error\": \"Invalid username.\"}");
-            } else {
-                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                response.setContentType("application/json");
-                response.getWriter().write("{\"error\": \"Authentication failed.\"}");
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to handle unsuccessful authentication response", e);
-        }
-    }
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
 
-    private Cookie createCookie(String key, String value) {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json; charset=UTF-8");
 
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60);
-        //cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
+        String errorMessage = failed.getCause() instanceof UsernameNotFoundException
+                ? "username에 해당하는 User 미존재"
+                : "비밀번호 불일치";
 
-        return cookie;
+        Map<String, Object> jsonResponse = Map.of(
+                "status", 401,
+                "code", 2002,
+                "message", errorMessage,
+                "data", Map.of(
+                        "message", "No data available"
+                )
+        );
+
+        response.getWriter().write(objectMapper.writeValueAsString(jsonResponse));
     }
 }
