@@ -60,6 +60,18 @@ public class BoardController {
         );
     }
 
+    @GetMapping("/top")
+    public ResponseEntity getTopBoards(@RequestParam(name = "boardCategory", required = false) BoardCategory boardCategory,
+                                       @RequestParam(name = "size") int size) {
+
+        Pageable pageable = PageRequest.of(0, size);
+        BoardListResponse boardListResponse = boardService.getTopBoards(boardCategory, pageable);
+
+        return ResponseEntity.status(200).body(
+                new ApiResponse<>(200, 0,"게시글 상위 목록 반환", boardListResponse)
+        );
+    }
+
     @GetMapping("/paged")
     public ResponseEntity getBoardsBeforeLastId(@RequestParam(name = "lastId") Long lastId,
                                                 @RequestParam(name = "boardCategory", required = false) BoardCategory boardCategory,
@@ -72,6 +84,5 @@ public class BoardController {
         return ResponseEntity.status(200).body(
                 new ApiResponse<>(200, 0,"게시글 목록 반환", boardListResponse)
         );
-
     }
 }
