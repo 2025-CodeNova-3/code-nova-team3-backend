@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
+    
+    //아이디로 보드 조회
+    Board findBoardByBoardId(Long boardId);
 
     // 카테고리별 게시글 개수를 구하는 메서드
     long countByBoardCategory(BoardCategory boardCategory);
@@ -21,4 +24,5 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     // lastId보다 작은 board_id 값을 가진 특정 카테고리의 Board 객체들을 내림차순으로 정렬
     Page<Board> findByBoardIdLessThanAndBoardCategoryOrderByBoardIdDesc(Long lastId, BoardCategory boardCategory, Pageable pageable);
+
 }
