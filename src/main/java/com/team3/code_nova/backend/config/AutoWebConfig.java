@@ -25,16 +25,5 @@ public class AutoWebConfig implements WebMvcConfigurer {
                 .allowCredentials(true)
                 .exposedHeaders("Set-Cookie", "Authorization");
     }
-
-    // react build 이후 build/ 폴더를 resources/static 으로 이동
-//    @Override
-//    public void addViewControllers(ViewControllerRegistry registry) {
-//        registry.addViewController("/**")
-//                .setViewName("forward:/index.html");
-//
-//        // /api로 시작하는 요청은 처리하지 않도록 예외를 추가합니다.
-//        registry.addViewController("/api/**")
-//                .setViewName(null); // /api 요청은 리디렉션하지 않음
-//    }
 }
 

@@ -34,10 +34,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(userId);
     }
 
-    public Optional<User> findUserByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
-
     private User makeBCryptPasswordEncodedUser(SignUpRequest signUpRequest){
         User user = signUpRequest.toActiveUser();
         String rawPassword = user.getPassword();

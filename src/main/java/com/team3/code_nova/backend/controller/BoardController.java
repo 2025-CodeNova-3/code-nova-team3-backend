@@ -9,10 +9,6 @@ import com.team3.code_nova.backend.dto.response.BoardListResponse;
 import com.team3.code_nova.backend.enums.BoardCategory;
 import com.team3.code_nova.backend.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -50,7 +46,7 @@ public class BoardController {
     @GetMapping("/{boardId}")
     @Operation(summary = "게시글 상세 조회", description = "특정 ID의 게시글을 조회합니다.")
     public ResponseEntity<?> getBoardById(
-            @PathVariable Long boardId,
+            @PathVariable("boardId") Long boardId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         try {
             return boardService.getBoardById(boardId);

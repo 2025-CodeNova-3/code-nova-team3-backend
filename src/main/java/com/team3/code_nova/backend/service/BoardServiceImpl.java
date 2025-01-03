@@ -141,10 +141,8 @@ public class BoardServiceImpl implements BoardService {
             long count = boardRepository.countByBoardCategory(category);
             categoryCounts.put(category.name(), count);
         }
-
         // 전체 게시글 수 구하기
         long totalCount = boardRepository.count();
-
         // 응답 객체 생성하여 반환
         return new BoardCategoryCountResponse(categoryCounts, totalCount);
     }
@@ -155,18 +153,14 @@ public class BoardServiceImpl implements BoardService {
 
         // 카테고리 여부에 따라 로직 분리
         if (boardCategory != null) {
-
             boardPage = boardRepository.findByBoardCategoryOrderByViewsDesc(boardCategory, pageable);
         } else {
-
             boardPage = boardRepository.findAllByOrderByViewsDesc(pageable);
         }
-
         // DTO 변환
         List<BoardListDTO> boardResponses = boardPage.getContent().stream()
                 .map(BoardListDTO::new)
                 .collect(Collectors.toList());
-
         // 응답 생성
         return new BoardListResponse(boardResponses, boardPage.getTotalElements(), 1);
     }

@@ -26,7 +26,7 @@ public class CommentController {
     @Operation(summary = "댓글 생성", description = "게시글에 댓글을 생성합니다.")
     public ResponseEntity<?> createComment(
             @AuthenticationPrincipal @Parameter(description = "현재 로그인한 사용자 정보") CustomUserDetails userDetails,
-            @PathVariable @Parameter(description = "댓글을 달 게시글 ID") Long boardId,
+            @PathVariable("boardId") @Parameter(description = "댓글을 달 게시글 ID") Long boardId,
             @RequestBody @Parameter(description = "댓글 생성 요청 객체") CommentCreateRequest request) {
         try {
             return commentService.createComment(userDetails.getUserId(), boardId, request);
@@ -40,7 +40,7 @@ public class CommentController {
     @GetMapping("/boards/{boardId}")
     @Operation(summary = "댓글 조회", description = "특정 게시글에 대한 댓글 목록을 조회합니다.")
     public ResponseEntity<?> getComments(
-            @PathVariable @Parameter(description = "댓글을 조회할 게시글 ID") Long boardId,
+            @PathVariable("boardId") @Parameter(description = "댓글을 조회할 게시글 ID") Long boardId,
             @RequestParam(required = false) @Parameter(description = "댓글을 비공개로 조회할지 여부") Boolean beforeOpen) {
         try {
             return commentService.getComments(boardId, beforeOpen);
@@ -55,7 +55,7 @@ public class CommentController {
     @Operation(summary = "댓글 삭제", description = "특정 댓글을 삭제합니다.")
     public ResponseEntity<?> deleteComment(
             @AuthenticationPrincipal @Parameter(description = "현재 로그인한 사용자 정보") CustomUserDetails userDetails,
-            @PathVariable @Parameter(description = "삭제할 댓글 ID") Long commentId) {
+            @PathVariable("commentId") @Parameter(description = "삭제할 댓글 ID") Long commentId) {
         try {
             return commentService.deleteComment(userDetails.getUserId(), commentId);
         } catch (Exception e) {

@@ -11,21 +11,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface BoardService {
-
     BoardCreateResponse createBoard(Long userId, BoardCreateRequest boardCreateRequest);
-
     ResponseEntity<?> getBoardById(Long id);
-  
     BoardCategoryCountResponse getBoardCountForCategories();
-
     BoardListResponse getTopBoards(BoardCategory boardCategory, Pageable pageable);
-
     BoardListResponse getBoards(BoardCategory boardCategory, Pageable pageable);
-
-    // BoardService 인터페이스에 추가
     ResponseEntity<?> getRecentBoards(Long userId);
-
     Integer getBoardCountForKeyword(String keyword);
-
     BoardListResponse getBoardsForKeyword(String keyword, Pageable pageable);
 }

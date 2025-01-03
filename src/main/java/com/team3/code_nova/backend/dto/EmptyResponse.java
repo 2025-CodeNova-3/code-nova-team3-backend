@@ -12,9 +12,4 @@ public class EmptyResponse {
     public EmptyResponse() {
         this.message = "No data available";
     }
-
-    // 선택적: 사용자 정의 메시지를 허용하는 생성자
-    public EmptyResponse(String message) {
-        this.message = message;
-    }
 }
