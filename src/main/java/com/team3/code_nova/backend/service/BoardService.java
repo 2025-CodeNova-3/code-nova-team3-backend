@@ -21,4 +21,8 @@ public interface BoardService {
     BoardListResponse getTopBoards(BoardCategory boardCategory, Pageable pageable);
 
     BoardListResponse getBoardsBeforeLastId(Long lastId, BoardCategory boardCategory, Pageable pageable);
+
+    Integer getBoardCountForKeyword(String keyword);
+
+    BoardListResponse getBoardsForKeywordBeforeLastId(Long lastId, String keyword, Pageable pageable);
 }

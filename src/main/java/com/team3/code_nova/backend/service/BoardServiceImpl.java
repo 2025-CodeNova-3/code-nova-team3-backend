@@ -198,4 +198,25 @@ public class BoardServiceImpl implements BoardService {
         // BoardListResponse에 페이지 데이터 포함하여 반환
         return new BoardListResponse(boardResponses, boardPage.getTotalElements(), boardPage.getTotalPages());
     }
+
+    @Override
+    public Integer getBoardCountForKeyword(String keyword) {
+        // 제목에 특정 키워드를 포함한 게시글의 개수를 반환
+        return (int) boardRepository.countByTitleContaining(keyword);
+    }
+
+    @Override
+    public BoardListResponse getBoardsForKeywordBeforeLastId(Long lastId, String keyword, Pageable pageable) {
+        // 제목에 키워드를 포함한 게시글들을 lastId보다 작은 board_id를 기준으로 내림차순으로 조회
+        Page<Board> boardPage = boardRepository.findByBoardIdLessThanAndTitleContainingOrderByBoardIdDesc(
+                lastId, keyword, pageable);
+
+        // Board 객체를 DTO로 변환
+        List<BoardListDTO> boardResponses = boardPage.getContent().stream()
+                .map(BoardListDTO::new)
+                .collect(Collectors.toList());
+
+        // 페이지 정보와 함께 BoardListResponse 반환
+        return new BoardListResponse(boardResponses, boardPage.getTotalElements(), boardPage.getTotalPages());
+    }
 }
