@@ -88,11 +88,15 @@ public class CommentServiceImpl implements CommentService {
             if (boardVisit != null && boardVisit.getOpenTime().isAfter(LocalDateTime.now())) {
                 beforeOpen = true;
             } else {
-                beforeOpen = false;
+                beforeOpen = null;
             }
 
             List<Comment> comments;
-            comments = commentRepository.findByBoard_BoardIdAndBeforeOpenOrderByCreatedAtDesc(boardId, beforeOpen);
+            if (beforeOpen != null) {
+                comments = commentRepository.findByBoard_BoardIdAndBeforeOpenOrderByCreatedAtDesc(boardId, beforeOpen);
+            } else {
+                comments = commentRepository.findByBoard_BoardIdOrderByCreatedAtDesc(boardId);
+            }
 
             List<CommentResponse> commentResponses = comments.stream()
                     .map(CommentResponse::from)
