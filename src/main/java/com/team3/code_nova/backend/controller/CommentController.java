@@ -40,10 +40,11 @@ public class CommentController {
     @GetMapping("/boards/{boardId}")
     @Operation(summary = "댓글 조회", description = "특정 게시글에 대한 댓글 목록을 조회합니다.")
     public ResponseEntity<?> getComments(
+            @AuthenticationPrincipal @Parameter(description = "현재 로그인한 사용자 정보") CustomUserDetails userDetails,
             @PathVariable("boardId") @Parameter(description = "댓글을 조회할 게시글 ID") Long boardId,
             @RequestParam(required = false) @Parameter(description = "댓글을 비공개로 조회할지 여부") Boolean beforeOpen) {
         try {
-            return commentService.getComments(boardId, beforeOpen);
+            return commentService.getComments(userDetails.getUserId(), boardId, beforeOpen);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(
                     new BasicApiResponse<>(500, -1, "서버 오류: " + e.getMessage(), null)

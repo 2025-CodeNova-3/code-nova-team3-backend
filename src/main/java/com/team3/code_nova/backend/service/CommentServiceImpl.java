@@ -80,14 +80,19 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getComments(Long boardId, Boolean beforeOpen) {
+    public ResponseEntity<?> getComments(Long userId, Long boardId, Boolean beforeOpen) {
         try {
-            List<Comment> comments;
-            if (beforeOpen != null) {
-                comments = commentRepository.findByBoard_BoardIdAndBeforeOpenOrderByCreatedAtDesc(boardId, beforeOpen);
+            // BoardVisit 확인
+            BoardVisit boardVisit = boardVisitRepository.findByUser_UserIdAndBoard_BoardId(userId, boardId);
+
+            if (boardVisit != null && boardVisit.getOpenTime().isAfter(LocalDateTime.now())) {
+                beforeOpen = true;
             } else {
-                comments = commentRepository.findByBoard_BoardIdOrderByCreatedAtDesc(boardId);
+                beforeOpen = false;
             }
+
+            List<Comment> comments;
+            comments = commentRepository.findByBoard_BoardIdAndBeforeOpenOrderByCreatedAtDesc(boardId, beforeOpen);
 
             List<CommentResponse> commentResponses = comments.stream()
                     .map(CommentResponse::from)
