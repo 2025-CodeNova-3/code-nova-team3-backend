@@ -23,7 +23,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,6 +156,28 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    public BoardListResponse getTopBoards(BoardCategory boardCategory, Pageable pageable) {
+        Page<Board> boardPage;
+
+        // 카테고리 여부에 따라 로직 분리
+        if (boardCategory != null) {
+
+            boardPage = boardRepository.findByBoardCategoryOrderByViewsDesc(boardCategory, pageable);
+        } else {
+
+            boardPage = boardRepository.findAllByOrderByViewsDesc(pageable);
+        }
+
+        // DTO 변환
+        List<BoardListDTO> boardResponses = boardPage.getContent().stream()
+                .map(BoardListDTO::new)
+                .collect(Collectors.toList());
+
+        // 응답 생성
+        return new BoardListResponse(boardResponses, boardPage.getTotalElements(), 1);
+    }
+
+    @Override
     public BoardListResponse getBoardsBeforeLastId(Long lastId, BoardCategory boardCategory, Pageable pageable) {
         Page<Board> boardPage;
 
@@ -171,7 +192,7 @@ public class BoardServiceImpl implements BoardService {
 
         // BoardResponse 객체로 변환하여 반환
         List<BoardListDTO> boardResponses = boardPage.getContent().stream()
-                .map(BoardListDTO::new)  // BoardResponse 객체로 변환
+                .map(BoardListDTO::new)
                 .collect(Collectors.toList());
 
         // BoardListResponse에 페이지 데이터 포함하여 반환

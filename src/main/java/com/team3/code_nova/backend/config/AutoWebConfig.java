@@ -21,7 +21,7 @@ public class AutoWebConfig implements WebMvcConfigurer {
         registry.addMapping("/**") // cors를 적용할 spring서버의 url 패턴.
                 .allowedOrigins("http://localhost:3000", frontDomain)
                 .allowedHeaders("*")
-                .allowedMethods("GET", "POST", "PUT")
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowCredentials(true)
                 .exposedHeaders("Set-Cookie", "Authorization");
     }

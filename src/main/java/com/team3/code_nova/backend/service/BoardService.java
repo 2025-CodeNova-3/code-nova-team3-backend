@@ -16,7 +16,9 @@ public interface BoardService {
 
     ResponseEntity<?> getBoardById(Long id);
   
-    public BoardCategoryCountResponse getBoardCountForCategories();
+    BoardCategoryCountResponse getBoardCountForCategories();
 
-    public BoardListResponse getBoardsBeforeLastId(Long lastId, BoardCategory boardCategory, Pageable pageable);
+    BoardListResponse getTopBoards(BoardCategory boardCategory, Pageable pageable);
+
+    BoardListResponse getBoardsBeforeLastId(Long lastId, BoardCategory boardCategory, Pageable pageable);
 }
