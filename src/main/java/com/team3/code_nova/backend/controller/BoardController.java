@@ -60,7 +60,7 @@ public class BoardController {
         );
     }
 
-    @GetMapping
+    @GetMapping("/paged")
     public ResponseEntity getBoardsBeforeLastId(@RequestParam(name = "lastId") Long lastId,
                                                 @RequestParam(name = "boardCategory", required = false) BoardCategory boardCategory,
                                                 @RequestParam(name = "page") int page,
