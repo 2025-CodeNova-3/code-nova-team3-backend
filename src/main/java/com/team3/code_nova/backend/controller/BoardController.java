@@ -60,18 +60,6 @@ public class BoardController {
         );
     }
 
-    @GetMapping("/top")
-    public ResponseEntity getTopBoards(@RequestParam(name = "boardCategory", required = false) BoardCategory boardCategory,
-                                       @RequestParam(name = "size") int size) {
-
-        Pageable pageable = PageRequest.of(0, size);
-        BoardListResponse boardListResponse = boardService.getTopBoards(boardCategory, pageable);
-
-        return ResponseEntity.status(200).body(
-                new ApiResponse<>(200, 0,"게시글 상위 목록 반환", boardListResponse)
-        );
-    }
-
     @GetMapping("/paged")
     public ResponseEntity getBoardsBeforeLastId(@RequestParam(name = "lastId") Long lastId,
                                                 @RequestParam(name = "boardCategory", required = false) BoardCategory boardCategory,
@@ -81,11 +69,12 @@ public class BoardController {
         Pageable pageable = PageRequest.of(page, size);
         BoardListResponse boardListResponse = boardService.getBoardsBeforeLastId(lastId, boardCategory, pageable);
 
-        
+
         return ResponseEntity.status(200).body(
                 new ApiResponse<>(200, 0,"게시글 목록 반환", boardListResponse)
         );
     }
+
 
     @GetMapping("/recent")
     public ResponseEntity<?> getRecentBoards(@AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -96,5 +85,40 @@ public class BoardController {
                     new ApiResponse<>(500, -1, "서버 오류: " + e.getMessage(), null)
             );
         }
+
+    @GetMapping("/keyword/counts")
+    public ResponseEntity getBoardsNumContainsKeyword(@RequestParam(name = "keyword") String keyword) {
+        Integer resultCount = boardService.getBoardCountForKeyword(keyword);
+
+        return ResponseEntity.status(200).body(
+                new ApiResponse<>(200, 0, "검색어 포함 게시글 개수 반환", resultCount)
+        );
+    }
+
+    @GetMapping("/keyword/paged")
+    public ResponseEntity getBoardsContainsKeywordBeforeLastId(@RequestParam(name = "lastId") Long lastId,
+                                                               @RequestParam(name = "keyword") String keyword,
+                                                               @RequestParam(name = "page") int page,
+                                                               @RequestParam(name = "size") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        BoardListResponse boardListResponse = boardService.getBoardsForKeywordBeforeLastId(lastId, keyword, pageable);
+
+        return ResponseEntity.status(200).body(
+                new ApiResponse<>(200, 0, "검색어 포함 게시글 목록 반환", boardListResponse)
+        );
+    }
+
+    @GetMapping("/top")
+    public ResponseEntity getTopBoards(@RequestParam(name = "boardCategory", required = false) BoardCategory boardCategory,
+                                       @RequestParam(name = "size") int size) {
+
+        Pageable pageable = PageRequest.of(0, size);
+        BoardListResponse boardListResponse = boardService.getTopBoards(boardCategory, pageable);
+
+        return ResponseEntity.status(200).body(
+                new ApiResponse<>(200, 0,"게시글 상위 목록 반환", boardListResponse)
+        );
+
     }
 }
