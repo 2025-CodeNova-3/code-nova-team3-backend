@@ -85,6 +85,7 @@ public class BoardController {
                     new ApiResponse<>(500, -1, "서버 오류: " + e.getMessage(), null)
             );
         }
+    }
 
     @GetMapping("/keyword/counts")
     public ResponseEntity getBoardsNumContainsKeyword(@RequestParam(name = "keyword") String keyword) {

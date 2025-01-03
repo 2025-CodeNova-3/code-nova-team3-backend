@@ -208,6 +208,7 @@ public class BoardServiceImpl implements BoardService {
                     new ApiResponse<>(500, -1, "서버 오류: " + e.getMessage(), null)
             );
         }
+    }
       
     @Override
     public Integer getBoardCountForKeyword(String keyword) {
