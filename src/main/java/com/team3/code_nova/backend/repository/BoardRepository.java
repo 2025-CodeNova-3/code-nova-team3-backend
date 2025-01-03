@@ -1,11 +1,16 @@
 package com.team3.code_nova.backend.repository;
 
 import com.team3.code_nova.backend.entity.Board;
+import com.team3.code_nova.backend.entity.BoardVisit;
 import com.team3.code_nova.backend.enums.BoardCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
@@ -30,4 +35,11 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     // 특정 카테고리의 Board 객체들을 views에 따라 내림차순 정렬 반환
     Page<Board> findByBoardCategoryOrderByViewsDesc(BoardCategory boardCategory, Pageable pageable);
+
+    // BoardRepository.java에 추가
+    @Query(value = "SELECT b.* FROM boards b " +
+            "INNER JOIN board_visits bv ON b.board_id = bv.board_id " +
+            "WHERE bv.user_id = :userId " +
+            "ORDER BY bv.recent_time DESC LIMIT 8", nativeQuery = true)
+    List<Board> findRecentBoardsByUserId(@Param("userId") Long userId);
 }
