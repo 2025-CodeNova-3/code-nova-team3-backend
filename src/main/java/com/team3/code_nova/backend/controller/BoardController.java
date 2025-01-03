@@ -62,16 +62,27 @@ public class BoardController {
 
     @GetMapping("/paged")
     public ResponseEntity getBoardsBeforeLastId(@RequestParam(name = "lastId") Long lastId,
-                                                @RequestParam(name = "boardCategory", required = false) BoardCategory boardCategory,
+                                                @RequestParam(name = "boardCategory", required = false) String boardCategoryStr,
                                                 @RequestParam(name = "page") int page,
                                                 @RequestParam(name = "size") int size) {
+
+        // "ALL" 문자열을 BoardCategory의 null 값으로 처리
+        BoardCategory boardCategory = null;
+        if (boardCategoryStr != null && !boardCategoryStr.equals("ALL")) {
+            try {
+                boardCategory = BoardCategory.valueOf(boardCategoryStr); // BoardCategory Enum으로 변환
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(400).body(
+                        new ApiResponse<>(400, -1, "유효하지 않은 카테고리입니다.", null)
+                );
+            }
+        }
 
         Pageable pageable = PageRequest.of(page, size);
         BoardListResponse boardListResponse = boardService.getBoardsBeforeLastId(lastId, boardCategory, pageable);
 
-
         return ResponseEntity.status(200).body(
-                new ApiResponse<>(200, 0,"게시글 목록 반환", boardListResponse)
+                new ApiResponse<>(200, 0, "게시글 목록 반환", boardListResponse)
         );
     }
 
