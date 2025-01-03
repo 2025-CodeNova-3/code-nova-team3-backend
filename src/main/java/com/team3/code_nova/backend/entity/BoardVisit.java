@@ -27,4 +27,6 @@ public class BoardVisit extends BaseEntity {
     private Board board;
 
     private LocalDateTime openTime;
+
+    private LocalDateTime recentTime;
 }

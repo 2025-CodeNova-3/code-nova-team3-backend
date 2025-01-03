@@ -69,10 +69,22 @@ public class BoardController {
         Pageable pageable = PageRequest.of(page, size);
         BoardListResponse boardListResponse = boardService.getBoardsBeforeLastId(lastId, boardCategory, pageable);
 
+
         return ResponseEntity.status(200).body(
                 new ApiResponse<>(200, 0,"게시글 목록 반환", boardListResponse)
         );
     }
+
+
+    @GetMapping("/recent")
+    public ResponseEntity<?> getRecentBoards(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        try {
+            return boardService.getRecentBoards(userDetails.getUserId());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                    new ApiResponse<>(500, -1, "서버 오류: " + e.getMessage(), null)
+            );
+        }
 
     @GetMapping("/keyword/counts")
     public ResponseEntity getBoardsNumContainsKeyword(@RequestParam(name = "keyword") String keyword) {
@@ -107,5 +119,6 @@ public class BoardController {
         return ResponseEntity.status(200).body(
                 new ApiResponse<>(200, 0,"게시글 상위 목록 반환", boardListResponse)
         );
+
     }
 }
