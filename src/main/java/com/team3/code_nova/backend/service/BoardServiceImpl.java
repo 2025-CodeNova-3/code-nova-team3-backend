@@ -1,16 +1,12 @@
 package com.team3.code_nova.backend.service;
 
-import com.team3.code_nova.backend.dto.request.BoardRequest;
-import com.team3.code_nova.backend.dto.response.BoardResponse;
+import com.team3.code_nova.backend.dto.request.BoardCreateRequest;
+import com.team3.code_nova.backend.dto.response.BoardCreateResponse;
 import com.team3.code_nova.backend.entity.Board;
 import com.team3.code_nova.backend.entity.User;
 import com.team3.code_nova.backend.repository.BoardRepository;
 import com.team3.code_nova.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,22 +22,22 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardResponse createBoard(Long userId, BoardRequest boardRequest) {
+    public BoardCreateResponse createBoard(Long userId, BoardCreateRequest boardCreateRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Board board = new Board();
-        board.setBoardCategory(boardRequest.getBoardCategory());
-        board.setTitle(boardRequest.getTitle());
-        board.setOpenContent(boardRequest.getOpenContent());
-        board.setHiddenContent(boardRequest.getHiddenContent());
-        board.setOpenDuration(boardRequest.getOpenDuration());
+        board.setBoardCategory(boardCreateRequest.getBoardCategory());
+        board.setTitle(boardCreateRequest.getTitle());
+        board.setOpenContent(boardCreateRequest.getOpenContent());
+        board.setHiddenContent(boardCreateRequest.getHiddenContent());
+        board.setOpenDuration(boardCreateRequest.getOpenDuration());
         board.setViews(0L);
         board.setUser(user);
 
         Board savedBoard = boardRepository.save(board);
 
-        return BoardResponse.builder()
+        return BoardCreateResponse.builder()
                 .boardId(savedBoard.getBoardId())
                 .title(savedBoard.getTitle())
                 .boardCategory(savedBoard.getBoardCategory().name())

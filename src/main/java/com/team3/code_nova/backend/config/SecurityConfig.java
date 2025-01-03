@@ -107,8 +107,8 @@ public class SecurityConfig {
                 // 인증 실패 시 로그인 페이지로 리다이렉트가 아닌 401 응답 뱉도록 설정
                 .exceptionHandling(customizer -> customizer.authenticationEntryPoint((request, response, authException) -> {
 
-                    InnerFilterResponse.sendInnerResponse(response, 401, 101,
-                                "유효하지 않은 토큰", new EmptyResponse());
+                    InnerFilterResponse.sendInnerResponse(response, 500, 500,
+                            "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.", new EmptyResponse());
                 }));
 
         //JWTFilter 추가

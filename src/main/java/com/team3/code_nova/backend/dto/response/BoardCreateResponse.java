@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class BoardResponse {
+public class BoardCreateResponse {
     private Long boardId;
     private String title;
     private String boardCategory;
