@@ -1,12 +1,12 @@
 package com.team3.code_nova.backend.entity;
 
-import com.team3.code_nova.backend.enums.BoardCategory;
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "comments")
