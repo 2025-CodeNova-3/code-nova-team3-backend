@@ -61,10 +61,9 @@ public class BoardController {
     }
 
     @GetMapping("/paged")
-    public ResponseEntity getBoardsBeforeLastId(@RequestParam(name = "lastId") Long lastId,
-                                                @RequestParam(name = "boardCategory", required = false) String boardCategoryStr,
-                                                @RequestParam(name = "page") int page,
-                                                @RequestParam(name = "size") int size) {
+    public ResponseEntity getBoards(@RequestParam(name = "boardCategory", required = false) String boardCategoryStr,
+                                    @RequestParam(name = "page") int page,
+                                    @RequestParam(name = "size") int size) {
 
         // "ALL" 문자열을 BoardCategory의 null 값으로 처리
         BoardCategory boardCategory = null;
@@ -79,7 +78,7 @@ public class BoardController {
         }
 
         Pageable pageable = PageRequest.of(page, size);
-        BoardListResponse boardListResponse = boardService.getBoardsBeforeLastId(lastId, boardCategory, pageable);
+        BoardListResponse boardListResponse = boardService.getBoards(boardCategory, pageable);
 
         return ResponseEntity.status(200).body(
                 new ApiResponse<>(200, 0, "게시글 목록 반환", boardListResponse)

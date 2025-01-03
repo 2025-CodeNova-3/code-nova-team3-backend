@@ -20,8 +20,9 @@ public interface BoardService {
 
     BoardListResponse getTopBoards(BoardCategory boardCategory, Pageable pageable);
 
-    BoardListResponse getBoardsBeforeLastId(Long lastId, BoardCategory boardCategory, Pageable pageable);
+    BoardListResponse getBoards(BoardCategory boardCategory, Pageable pageable);
 
+    BoardListResponse getBoardsBeforeLastId(Long lastId, BoardCategory boardCategory, Pageable pageable);
 
     // BoardService 인터페이스에 추가
     ResponseEntity<?> getRecentBoards(Long userId);

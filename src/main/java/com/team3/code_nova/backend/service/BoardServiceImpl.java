@@ -14,6 +14,7 @@ import com.team3.code_nova.backend.repository.BoardVisitRepository;
 import com.team3.code_nova.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -168,6 +169,28 @@ public class BoardServiceImpl implements BoardService {
 
         // 응답 생성
         return new BoardListResponse(boardResponses, boardPage.getTotalElements(), 1);
+    }
+
+    @Override
+    public BoardListResponse getBoards(BoardCategory boardCategory, Pageable pageable) {
+        Page<Board> boardPage;
+
+        // BoardCategory가 주어진 경우 해당 카테고리로 필터링
+        if (boardCategory != null) {
+            boardPage = boardRepository.findByBoardCategoryOrderByBoardIdDesc(boardCategory, pageable);
+        } else {
+            // 전체 게시글을 내림차순으로 반환 (boardId 기준)
+            Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Order.desc("boardId")));
+            boardPage = boardRepository.findAll(sortedPageable);
+        }
+
+        // BoardResponse 객체로 변환하여 반환
+        List<BoardListDTO> boardResponses = boardPage.getContent().stream()
+                .map(BoardListDTO::new)
+                .collect(Collectors.toList());
+
+        // BoardListResponse에 페이지 데이터 포함하여 반환
+        return new BoardListResponse(boardResponses, boardPage.getTotalElements(), boardPage.getTotalPages());
     }
 
     @Override
