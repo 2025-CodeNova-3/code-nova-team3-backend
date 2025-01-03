@@ -1,5 +1,6 @@
 package com.team3.code_nova.backend.repository;
 
+import com.team3.code_nova.backend.dto.response.BoardRecentVisitResponse;
 import com.team3.code_nova.backend.entity.Board;
 import com.team3.code_nova.backend.entity.BoardVisit;
 import com.team3.code_nova.backend.enums.BoardCategory;
@@ -36,10 +37,10 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     // 특정 카테고리의 Board 객체들을 views에 따라 내림차순 정렬 반환
     Page<Board> findByBoardCategoryOrderByViewsDesc(BoardCategory boardCategory, Pageable pageable);
 
-    // BoardRepository.java에 추가
-    @Query(value = "SELECT b.* FROM boards b " +
-            "INNER JOIN board_visits bv ON b.board_id = bv.board_id " +
-            "WHERE bv.user_id = :userId " +
-            "ORDER BY bv.recent_time DESC LIMIT 8", nativeQuery = true)
-    List<Board> findRecentBoardsByUserId(@Param("userId") Long userId);
+    @Query("SELECT new com.team3.code_nova.backend.dto.response.BoardRecentVisitResponse(b, bv.openTime) " +
+            "FROM Board b " +
+            "INNER JOIN BoardVisit bv ON b.boardId = bv.board.boardId " +
+            "WHERE bv.user.userId = :userId " +
+            "ORDER BY bv.recentTime DESC")
+    List<BoardRecentVisitResponse> findRecentBoardsWithOpenTimeByUserId(@Param("userId") Long userId, Pageable pageable);
 }

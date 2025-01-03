@@ -4,10 +4,7 @@ import com.team3.code_nova.backend.dto.ApiResponse;
 import com.team3.code_nova.backend.dto.auth.CustomUserDetails;
 import com.team3.code_nova.backend.dto.BoardListDTO;
 import com.team3.code_nova.backend.dto.request.BoardCreateRequest;
-import com.team3.code_nova.backend.dto.response.BoardCategoryCountResponse;
-import com.team3.code_nova.backend.dto.response.BoardCreateResponse;
-import com.team3.code_nova.backend.dto.response.BoardVisitResponse;
-import com.team3.code_nova.backend.dto.response.BoardListResponse;
+import com.team3.code_nova.backend.dto.response.*;
 import com.team3.code_nova.backend.entity.Board;
 import com.team3.code_nova.backend.entity.BoardVisit;
 import com.team3.code_nova.backend.entity.User;
@@ -199,14 +196,11 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public ResponseEntity<?> getRecentBoards(Long userId) {
         try {
-            List<Board> recentBoards = boardRepository.findRecentBoardsByUserId(userId);
-            List<BoardListDTO> boardResponses = recentBoards.stream()
-                    .map(BoardListDTO::new)
-                    .collect(Collectors.toList());
+            List<BoardRecentVisitResponse> recentBoards = boardRepository
+                    .findRecentBoardsWithOpenTimeByUserId(userId, PageRequest.of(0, 8));
 
             return ResponseEntity.ok(
-                    new ApiResponse<>(200, 0, "최근 조회한 게시글 목록 반환",
-                            new BoardListResponse(boardResponses, boardResponses.size(), 1))
+                    new ApiResponse<>(200, 0, "최근 조회한 게시글 목록 반환", recentBoards)
             );
         } catch (Exception e) {
             return ResponseEntity.status(500).body(
