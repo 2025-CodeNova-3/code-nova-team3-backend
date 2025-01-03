@@ -71,7 +71,7 @@ public class BoardController {
     }
 
     @GetMapping("/paged")
-    @Operation(summary = "게시글 목록 조회", description = "특정 마지막 ID 이전의 게시글 목록을 페이지네이션 형태로 반환합니다."  
+    @Operation(summary = "게시글 목록 조회", description = "특정 마지막 ID 이전의 게시글 목록을 페이지네이션 형태로 반환합니다.")
     public ResponseEntity getBoards(@RequestParam(name = "boardCategory", required = false) String boardCategoryStr,
                                     @RequestParam(name = "page") int page,
                                     @RequestParam(name = "size") int size) {
@@ -83,7 +83,7 @@ public class BoardController {
                 boardCategory = BoardCategory.valueOf(boardCategoryStr); // BoardCategory Enum으로 변환
             } catch (IllegalArgumentException e) {
                 return ResponseEntity.status(400).body(
-                        new ApiResponse<>(400, -1, "유효하지 않은 카테고리입니다.", null)
+                        new BasicApiResponse<>(400, -1, "유효하지 않은 카테고리입니다.", null)
                 );
             }
         }
@@ -92,7 +92,7 @@ public class BoardController {
         BoardListResponse boardListResponse = boardService.getBoards(boardCategory, pageable);
 
         return ResponseEntity.status(200).body(
-                new ApiResponse<>(200, 0, "게시글 목록 반환", boardListResponse)
+                new BasicApiResponse<>(200, 0, "게시글 목록 반환", boardListResponse)
        );
     }
 
