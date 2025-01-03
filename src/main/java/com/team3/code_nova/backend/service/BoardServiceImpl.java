@@ -49,16 +49,4 @@ public class BoardServiceImpl implements BoardService {
                 .views(savedBoard.getViews())
                 .build();
     }
-
-
-    public Page<Board> getBoardsByCategory(String category, Long lastId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-
-        // category가 "all"이면 전체 게시글을 가져오고, 아니면 해당 category의 게시글을 가져옴
-        if ("all".equalsIgnoreCase(category)) {
-            return boardRepository.findByIdLessThan(lastId, pageable);
-        } else {
-            return boardRepository.findByCategoryAndIdLessThan(category, lastId, pageable);
-        }
-    }
 }

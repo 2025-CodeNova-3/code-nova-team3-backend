@@ -33,17 +33,4 @@ public class BoardController {
                 new ApiResponse<>(200, 0,"게시글 생성 완료", response)
         );
     }
-
-    @GetMapping
-    public ResponseEntity getBoardsByCategory(
-            @RequestParam("category") String category,
-            @RequestParam("lastId") Long lastId,
-            @RequestParam("page") int page,
-            @RequestParam("size") int size) {
-
-        Page<Board> boards = boardService.getBoardsByCategory(category, lastId, page, size);
-        return ResponseEntity.status(200).body(
-                new ApiResponse<>(200, 0,"게시글 페이징 반환", boards)
-        );
-    }
 }

@@ -9,9 +9,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    // category가 "all"이 아닌 경우에만 category 필터를 적용
-    Page<Board> findByCategoryAndIdLessThan(String category, Long lastId, Pageable pageable);
-
-    // category가 "all"일 경우에는 전체 게시글을 가져옴
-    Page<Board> findByIdLessThan(Long lastId, Pageable pageable);
 }

@@ -10,6 +10,4 @@ import org.springframework.stereotype.Service;
 public interface BoardService {
 
     public BoardResponse createBoard(Long userId, BoardRequest boardRequest);
-
-    Page<Board> getBoardsByCategory(String category, Long lastId, int page, int size);
 }
