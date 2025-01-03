@@ -4,8 +4,9 @@ import com.team3.code_nova.backend.enums.BoardCategory;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Getter
+@Getter @Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "boards")

@@ -1,4 +1,4 @@
-package com.team3.code_nova.backend.dto;
+package com.team3.code_nova.backend.dto.request;
 
 import com.team3.code_nova.backend.entity.User;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import static com.team3.code_nova.backend.enums.Role.USER;
 import static com.team3.code_nova.backend.enums.Status.ACTIVE;
 
 @Getter
-public class SignUpDTO {
+public class SignUpRequest {
     private String username;
 
     private String password;

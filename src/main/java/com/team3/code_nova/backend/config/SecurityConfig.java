@@ -101,6 +101,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/reissue").permitAll()
                         .requestMatchers("/api/auth/sign-out").hasAnyAuthority(ADMIN.getValue(), USER.getValue())
                         .requestMatchers("/api/users/**").hasAnyAuthority(ADMIN.getValue(), USER.getValue())
+                        .requestMatchers("/api/boards/**").hasAnyAuthority(ADMIN.getValue(), USER.getValue())
                         .anyRequest().authenticated())
                 
                 // 인증 실패 시 로그인 페이지로 리다이렉트가 아닌 401 응답 뱉도록 설정
