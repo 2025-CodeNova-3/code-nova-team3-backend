@@ -30,4 +30,11 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     // 특정 카테고리의 Board 객체들을 views에 따라 내림차순 정렬 반환
     Page<Board> findByBoardCategoryOrderByViewsDesc(BoardCategory boardCategory, Pageable pageable);
+
+    // 제목에 특정 키워드를 포함한 Board 객체의 개수를 반환
+    long countByTitleContaining(String titleKeyword);
+
+    // 제목에 특정 키워드를 포함한 게시글들을 lastId보다 작은 board_id를 기준으로 내림차순으로 반환
+    Page<Board> findByBoardIdLessThanAndTitleContainingOrderByBoardIdDesc(
+            Long lastId, String titleKeyword, Pageable pageable);
 }
