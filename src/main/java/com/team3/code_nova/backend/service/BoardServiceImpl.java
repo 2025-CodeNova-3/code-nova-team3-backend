@@ -193,29 +193,6 @@ public class BoardServiceImpl implements BoardService {
         return new BoardListResponse(boardResponses, boardPage.getTotalElements(), boardPage.getTotalPages());
     }
 
-    @Override
-    public BoardListResponse getBoardsBeforeLastId(Long lastId, BoardCategory boardCategory, Pageable pageable) {
-        Page<Board> boardPage;
-
-        // BoardCategory가 주어진 경우 해당 카테고리로 필터링
-        if (boardCategory != null) {
-
-            boardPage = boardRepository.findByBoardIdLessThanAndBoardCategoryOrderByBoardIdDesc(lastId, boardCategory, pageable);
-        } else {
-            // 카테고리 없이, lastId 보다 작은 게시글 반환
-            boardPage = boardRepository.findByBoardIdLessThanOrderByBoardIdDesc(lastId, pageable);
-        }
-
-        // BoardResponse 객체로 변환하여 반환
-        List<BoardListDTO> boardResponses = boardPage.getContent().stream()
-                .map(BoardListDTO::new)
-                .collect(Collectors.toList());
-
-        // BoardListResponse에 페이지 데이터 포함하여 반환
-        return new BoardListResponse(boardResponses, boardPage.getTotalElements(), boardPage.getTotalPages());
-    }
-
-
     // BoardServiceImpl.java에서 getRecentBoards 구현
     @Override
     public ResponseEntity<?> getRecentBoards(Long userId) {
@@ -240,10 +217,9 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardListResponse getBoardsForKeywordBeforeLastId(Long lastId, String keyword, Pageable pageable) {
-        // 제목에 키워드를 포함한 게시글들을 lastId보다 작은 board_id를 기준으로 내림차순으로 조회
-        Page<Board> boardPage = boardRepository.findByBoardIdLessThanAndTitleContainingOrderByBoardIdDesc(
-                lastId, keyword, pageable);
+    public BoardListResponse getBoardsForKeyword(String keyword, Pageable pageable) {
+        // 제목에 키워드를 포함한 게시글들을 page 값을 기준으로 조회 (lastId는 사용하지 않음)
+        Page<Board> boardPage = boardRepository.findByTitleContainingOrderByBoardIdDesc(keyword, pageable);
 
         // Board 객체를 DTO로 변환
         List<BoardListDTO> boardResponses = boardPage.getContent().stream()

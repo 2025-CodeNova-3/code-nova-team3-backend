@@ -22,12 +22,10 @@ public interface BoardService {
 
     BoardListResponse getBoards(BoardCategory boardCategory, Pageable pageable);
 
-    BoardListResponse getBoardsBeforeLastId(Long lastId, BoardCategory boardCategory, Pageable pageable);
-
     // BoardService 인터페이스에 추가
     ResponseEntity<?> getRecentBoards(Long userId);
 
     Integer getBoardCountForKeyword(String keyword);
 
-    BoardListResponse getBoardsForKeywordBeforeLastId(Long lastId, String keyword, Pageable pageable);
+    BoardListResponse getBoardsForKeyword(String keyword, Pageable pageable);
 }

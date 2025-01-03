@@ -107,13 +107,12 @@ public class BoardController {
     }
 
     @GetMapping("/keyword/paged")
-    public ResponseEntity getBoardsContainsKeywordBeforeLastId(@RequestParam(name = "lastId") Long lastId,
-                                                               @RequestParam(name = "keyword") String keyword,
-                                                               @RequestParam(name = "page") int page,
-                                                               @RequestParam(name = "size") int size) {
+    public ResponseEntity getBoardsContainsKeyword(@RequestParam(name = "keyword") String keyword,
+                                                   @RequestParam(name = "page") int page,
+                                                   @RequestParam(name = "size") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        BoardListResponse boardListResponse = boardService.getBoardsForKeywordBeforeLastId(lastId, keyword, pageable);
+        BoardListResponse boardListResponse = boardService.getBoardsForKeyword(keyword, pageable);
 
         return ResponseEntity.status(200).body(
                 new ApiResponse<>(200, 0, "검색어 포함 게시글 목록 반환", boardListResponse)
