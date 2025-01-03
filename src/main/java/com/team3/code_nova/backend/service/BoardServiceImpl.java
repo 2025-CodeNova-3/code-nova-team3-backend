@@ -1,6 +1,6 @@
 package com.team3.code_nova.backend.service;
 
-import com.team3.code_nova.backend.dto.ApiResponse;
+import com.team3.code_nova.backend.dto.BasicApiResponse;
 import com.team3.code_nova.backend.dto.auth.CustomUserDetails;
 import com.team3.code_nova.backend.dto.BoardListDTO;
 import com.team3.code_nova.backend.dto.request.BoardCreateRequest;
@@ -76,7 +76,7 @@ public class BoardServiceImpl implements BoardService {
             Board board = boardRepository.findBoardByBoardId(boardId);
             if (board == null) {
                 return ResponseEntity.status(404).body(
-                        new ApiResponse<>(404, -1, "게시글을 찾을 수 없습니다.", null)
+                        new BasicApiResponse<>(404, -1, "게시글을 찾을 수 없습니다.", null)
                 );
             }
 
@@ -120,12 +120,12 @@ public class BoardServiceImpl implements BoardService {
                     .build();
 
             return ResponseEntity.ok(
-                    new ApiResponse<>(200, 0, "게시글 조회 성공", response)
+                    new BasicApiResponse<>(200, 0, "게시글 조회 성공", response)
             );
 
         } catch (Exception e) {
             return ResponseEntity.status(500).body(
-                    new ApiResponse<>(500, -1, "서버 오류가 발생했습니다: " + e.getMessage(), null)
+                    new BasicApiResponse<>(500, -1, "서버 오류가 발생했습니다: " + e.getMessage(), null)
             );
         }
     }
@@ -201,11 +201,11 @@ public class BoardServiceImpl implements BoardService {
                     .findRecentBoardsWithOpenTimeByUserId(userId, PageRequest.of(0, 8));
 
             return ResponseEntity.ok(
-                    new ApiResponse<>(200, 0, "최근 조회한 게시글 목록 반환", recentBoards)
+                    new BasicApiResponse<>(200, 0, "최근 조회한 게시글 목록 반환", recentBoards)
             );
         } catch (Exception e) {
             return ResponseEntity.status(500).body(
-                    new ApiResponse<>(500, -1, "서버 오류: " + e.getMessage(), null)
+                    new BasicApiResponse<>(500, -1, "서버 오류: " + e.getMessage(), null)
             );
         }
     }

@@ -1,6 +1,6 @@
 package com.team3.code_nova.backend.service;
 
-import com.team3.code_nova.backend.dto.ApiResponse;
+import com.team3.code_nova.backend.dto.BasicApiResponse;
 import com.team3.code_nova.backend.dto.request.CommentCreateRequest;
 import com.team3.code_nova.backend.dto.response.CommentResponse;
 import com.team3.code_nova.backend.entity.Board;
@@ -49,15 +49,15 @@ public class CommentServiceImpl implements CommentService {
 
             Comment savedComment = commentRepository.save(comment);
             return ResponseEntity.ok(
-                    new ApiResponse<>(200, 0, "댓글이 생성되었습니다.", CommentResponse.from(savedComment))
+                    new BasicApiResponse<>(200, 0, "댓글이 생성되었습니다.", CommentResponse.from(savedComment))
             );
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(
-                    new ApiResponse<>(400, -1, e.getMessage(), null)
+                    new BasicApiResponse<>(400, -1, e.getMessage(), null)
             );
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(
-                    new ApiResponse<>(500, -1, "서버 오류가 발생했습니다.", null)
+                    new BasicApiResponse<>(500, -1, "서버 오류가 발생했습니다.", null)
             );
         }
     }
@@ -78,11 +78,11 @@ public class CommentServiceImpl implements CommentService {
                     .collect(Collectors.toList());
 
             return ResponseEntity.ok(
-                    new ApiResponse<>(200, 0, "댓글 목록을 조회했습니다.", commentResponses)
+                    new BasicApiResponse<>(200, 0, "댓글 목록을 조회했습니다.", commentResponses)
             );
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(
-                    new ApiResponse<>(500, -1, "서버 오류가 발생했습니다.", null)
+                    new BasicApiResponse<>(500, -1, "서버 오류가 발생했습니다.", null)
             );
         }
     }
@@ -96,21 +96,21 @@ public class CommentServiceImpl implements CommentService {
 
             if (!comment.getUser().getUserId().equals(userId)) {
                 return ResponseEntity.badRequest().body(
-                        new ApiResponse<>(400, -1, "댓글 삭제 권한이 없습니다.", null)
+                        new BasicApiResponse<>(400, -1, "댓글 삭제 권한이 없습니다.", null)
                 );
             }
 
             commentRepository.delete(comment);
             return ResponseEntity.ok(
-                    new ApiResponse<>(200, 0, "댓글이 삭제되었습니다.", null)
+                    new BasicApiResponse<>(200, 0, "댓글이 삭제되었습니다.", null)
             );
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(
-                    new ApiResponse<>(400, -1, e.getMessage(), null)
+                    new BasicApiResponse<>(400, -1, e.getMessage(), null)
             );
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(
-                    new ApiResponse<>(500, -1, "서버 오류가 발생했습니다.", null)
+                    new BasicApiResponse<>(500, -1, "서버 오류가 발생했습니다.", null)
             );
         }
     }
