@@ -25,6 +25,13 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     // 전체 게시글 개수를 구하는 메서드
     long count();
 
+    // 전체 게시글을 가져오는 메서드
+    Page<Board> findAll(Pageable pageable);
+
+    // 카테고리로 필터링된 게시글을 가져오는 메서드
+    Page<Board> findByBoardCategoryOrderByBoardIdDesc(BoardCategory boardCategory, Pageable pageable);
+
+
     // lastId보다 작은 board_id 값을 가진 Board 객체들을 내림차순으로 정렬
     Page<Board> findByBoardIdLessThanOrderByBoardIdDesc(Long lastId, Pageable pageable);
 
