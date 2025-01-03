@@ -71,19 +71,29 @@ public class BoardController {
     }
 
     @GetMapping("/paged")
-    @Operation(summary = "게시글 목록 조회", description = "특정 마지막 ID 이전의 게시글 목록을 페이지네이션 형태로 반환합니다.")
-    public ResponseEntity<?> getBoardsBeforeLastId(
-            @RequestParam(name = "lastId") Long lastId,
-            @RequestParam(name = "boardCategory", required = false) BoardCategory boardCategory,
-            @RequestParam(name = "page") int page,
-            @RequestParam(name = "size") int size) {
+    @Operation(summary = "게시글 목록 조회", description = "특정 마지막 ID 이전의 게시글 목록을 페이지네이션 형태로 반환합니다."  
+    public ResponseEntity getBoards(@RequestParam(name = "boardCategory", required = false) String boardCategoryStr,
+                                    @RequestParam(name = "page") int page,
+                                    @RequestParam(name = "size") int size) {
+
+        // "ALL" 문자열을 BoardCategory의 null 값으로 처리
+        BoardCategory boardCategory = null;
+        if (boardCategoryStr != null && !boardCategoryStr.equals("ALL")) {
+            try {
+                boardCategory = BoardCategory.valueOf(boardCategoryStr); // BoardCategory Enum으로 변환
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(400).body(
+                        new ApiResponse<>(400, -1, "유효하지 않은 카테고리입니다.", null)
+                );
+            }
+        }
 
         Pageable pageable = PageRequest.of(page, size);
-        BoardListResponse boardListResponse = boardService.getBoardsBeforeLastId(lastId, boardCategory, pageable);
+        BoardListResponse boardListResponse = boardService.getBoards(boardCategory, pageable);
 
         return ResponseEntity.status(200).body(
-                new BasicApiResponse<>(200, 0, "게시글 목록 반환", boardListResponse)
-        );
+                new ApiResponse<>(200, 0, "게시글 목록 반환", boardListResponse)
+       );
     }
 
     @GetMapping("/recent")
@@ -111,14 +121,12 @@ public class BoardController {
 
     @GetMapping("/keyword/paged")
     @Operation(summary = "검색어 포함 게시글 목록 조회", description = "특정 검색어를 포함한 게시글을 페이지네이션 형태로 반환합니다.")
-    public ResponseEntity<?> getBoardsContainsKeywordBeforeLastId(
-            @RequestParam(name = "lastId") Long lastId,
-            @RequestParam(name = "keyword") String keyword,
-            @RequestParam(name = "page") int page,
-            @RequestParam(name = "size") int size) {
+    public ResponseEntity getBoardsContainsKeyword(@RequestParam(name = "keyword") String keyword,
+                                                   @RequestParam(name = "page") int page,
+                                                   @RequestParam(name = "size") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        BoardListResponse boardListResponse = boardService.getBoardsForKeywordBeforeLastId(lastId, keyword, pageable);
+        BoardListResponse boardListResponse = boardService.getBoardsForKeyword(keyword, pageable);
 
         return ResponseEntity.status(200).body(
                 new BasicApiResponse<>(200, 0, "검색어 포함 게시글 목록 반환", boardListResponse)

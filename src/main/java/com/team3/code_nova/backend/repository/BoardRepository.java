@@ -25,11 +25,11 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     // 전체 게시글 개수를 구하는 메서드
     long count();
 
-    // lastId보다 작은 board_id 값을 가진 Board 객체들을 내림차순으로 정렬
-    Page<Board> findByBoardIdLessThanOrderByBoardIdDesc(Long lastId, Pageable pageable);
+    // 전체 게시글을 가져오는 메서드
+    Page<Board> findAll(Pageable pageable);
 
-    // lastId보다 작은 board_id 값을 가진 특정 카테고리의 Board 객체들을 내림차순으로 정렬
-    Page<Board> findByBoardIdLessThanAndBoardCategoryOrderByBoardIdDesc(Long lastId, BoardCategory boardCategory, Pageable pageable);
+    // 카테고리로 필터링된 게시글을 가져오는 메서드
+    Page<Board> findByBoardCategoryOrderByBoardIdDesc(BoardCategory boardCategory, Pageable pageable);
 
     // 모든 카테고리에 대해 Board 객체들을 views에 따라 내림차순 정렬 반환
     Page<Board> findAllByOrderByViewsDesc(Pageable pageable);
@@ -48,7 +48,5 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     // 제목에 특정 키워드를 포함한 Board 객체의 개수를 반환
     long countByTitleContaining(String titleKeyword);
 
-    // 제목에 특정 키워드를 포함한 게시글들을 lastId보다 작은 board_id를 기준으로 내림차순으로 반환
-    Page<Board> findByBoardIdLessThanAndTitleContainingOrderByBoardIdDesc(
-            Long lastId, String titleKeyword, Pageable pageable);
+    Page<Board> findByTitleContainingOrderByBoardIdDesc(String titleKeyword, Pageable pageable);
 }
