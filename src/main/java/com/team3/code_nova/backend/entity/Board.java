@@ -17,6 +17,7 @@ public class Board extends BaseEntity {
     @Column(name = "board_id")
     private Long boardId;
 
+    @Enumerated(EnumType.STRING)
     private BoardCategory boardCategory;
 
     @ManyToOne(cascade = CascadeType.MERGE, targetEntity = User.class)
