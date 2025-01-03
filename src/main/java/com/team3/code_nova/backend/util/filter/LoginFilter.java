@@ -3,6 +3,7 @@ package com.team3.code_nova.backend.util.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team3.code_nova.backend.dto.AccessAndRefreshTokenDTO;
 import com.team3.code_nova.backend.dto.EmptyResponse;
+import com.team3.code_nova.backend.dto.SignInResponseDTO;
 import com.team3.code_nova.backend.dto.auth.CustomUserDetails;
 import com.team3.code_nova.backend.util.InnerFilterResponse;
 import com.team3.code_nova.backend.util.JWTUtil;
@@ -76,7 +77,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String refreshToken = jwtUtil.generateRefreshToken(userId, username, role);
 
         InnerFilterResponse.sendInnerResponse(response, 200, 2000,
-                "로그인 성공! 엑세스, 리프레시 토큰 발급", new AccessAndRefreshTokenDTO(accessToken, refreshToken));
+                "로그인 성공! 엑세스, 리프레시 토큰 발급", new SignInResponseDTO(accessToken, refreshToken, userId));
 
     }
 
