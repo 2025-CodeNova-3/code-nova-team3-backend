@@ -136,6 +136,7 @@ public class BoardServiceImpl implements BoardService {
                     new ApiResponse<>(500, -1, "서버 오류가 발생했습니다: " + e.getMessage(), null)
             );
         }
+    }
     
     @Override
     public BoardCategoryCountResponse getBoardCountForCategories() {

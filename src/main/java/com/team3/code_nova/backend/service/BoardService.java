@@ -18,7 +18,5 @@ public interface BoardService {
   
     public BoardCategoryCountResponse getBoardCountForCategories();
 
-    public BoardCreateResponse createBoard(Long userId, BoardCreateRequest boardCreateRequest);
-
     public BoardListResponse getBoardsBeforeLastId(Long lastId, BoardCategory boardCategory, Pageable pageable);
 }
